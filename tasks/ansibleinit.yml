@@ -1,0 +1,14 @@
+---
+priority: 20
+inline: |
+  if [ -f /etc/debian_version ]; then
+    export DEBIAN_FRONTEND=noninteractive
+    [[ $(find /etc/apt/sources.list.d/ -maxdepth 1 -type f -iname '*ansible*.list' 2>/dev/null | wc -l) -eq 0 ]] && add-apt-repository -y ppa:ansible/ansible
+    [[ $(find /etc/apt/trusted.gpg.d/ -maxdepth 1 -type f -iname '*ansible*.gpg' 2>/dev/null | wc -l) -eq 0 ]] && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7BB9C367
+    [[ $(which ansible >/dev/null 2>&1; echo $?) -ne 0 ]] && apt-get -q -y update && apt-get -q -y install ansible
+  elif [ -f /etc/redhat-release ]; then
+    [[ $(grep -Rq 'pub/epel' /etc/yum.repos.d; echo $?) -ne 0 ]] && rpm -Ivh "https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(uname -r | sed -r 's/^.+el([0-9]+).+$/\1/').noarch.rpm"
+    [[ $(which ansible >/dev/null 2>&1; echo $?) -ne 0 ]] && yum -y install ansible
+  fi
+
+  ansible --version | head -n1 | awk '{ print "Ansible version: "$2 }'

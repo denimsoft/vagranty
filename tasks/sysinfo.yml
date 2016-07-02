@@ -1,0 +1,11 @@
+---
+priority: 50
+privileged: false
+run: always
+inline: |
+  cat /proc/loadavg | awk '{ print "System load: "$3 }'
+  echo "Processes: $(expr $(ps ax | wc -l))"
+  free | grep 'Mem:' | awk '{ printf "Memory usage: %.1f%% of %.1fGB", ($2-$4)/$2*100, $2/1024/1024 }'
+  free | grep 'Swap:' | awk '{ printf "Swap usage: %.1f%% of %.1fGB", ($2-$4)/$2*100, $2/1024/1024 }' 2>/dev/null
+  df -lP 2>/dev/null | egrep '/$' | head -n1 | awk '{ printf "Disk usage /: %.1f%% of %.1fGB", $3/$2*100, $2/1024/1024 }'
+  ifconfig | perl -0777 -pe 's/\n / /g' | grep 'inet addr:' | grep ':Link' | perl -pe 's/^(.+?) .+?addr:(.+?) .+/IP address for \1: \2/'

@@ -1,0 +1,13 @@
+---
+# The settings within config.ssh relate to configuring how Vagrant will access
+# your machine over SSH. As with most Vagrant settings, the defaults are
+# typically fine, but you can fine tune whatever you would like.
+#
+# See: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html
+
+forward_agent: true
+insert_key: false
+shell: "bash -c 'BASH_ENV=/etc/profile exec bash'"
+private_key_path:
+  - "~/.vagrant.d/insecure_private_key"
+  - "~/.ssh/id_rsa"

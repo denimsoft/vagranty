@@ -1,0 +1,22 @@
+---
+priority: 10
+inline: |
+  # Fixes vagrant issue 1673 "stdin: is not a tty".
+  # See: https://github.com/mitchellh/vagrant/issues/1673
+  [ $(egrep -q '^mesg n' /root/.profile; echo $?) -ne 0 ] && perl -i -pe 's/^mesg n/tty -s && mesg n/' /root/.profile
+
+  # install cachefilesd to accelerate NFS mounts when shares mounted when the option fsc is detected.
+  if [ $(mount | grep -q 'fsc'; echo $?) -eq 0 ]; then
+    if [ -f /etc/debian_version ]; then
+      export DEBIAN_FRONTEND=noninteractive
+      [[ $(which cachefilesd >/dev/null 2>&1; echo $?) -ne 0 ]] && apt-get -qqy update && apt-get -qqy install cachefilesd
+      [[ $(grep -q 'RUN=yes' /etc/default/cachefilesd; echo $?) -ne 0 ]] && echo "RUN=yes" > /etc/default/cachefilesd
+      [[ $(service cachefilesd status >/dev/null 2>&1; echo $?) -ne 0 ]] && service cachefilesd start
+    elif [ -f /etc/redhat-release ]; then
+      [[ $(which cachefilesd >/dev/null 2>&1; echo $?) -ne 0 ]] && yum -y install cachefilesd
+      [[ $(lsmod | grep -q cachefiles; echo $?) -ne 0 ]] && modprobe cachefiles
+      [[ $(service cachefilesd status >/dev/null 2>&1; echo $?) -ne 0 ]] && service cachefilesd start
+    fi
+
+    cachefilesd --version | head -n1 | awk '{ print "cachefilesd version: "$3 }'
+  fi
