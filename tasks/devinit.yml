@@ -1,5 +1,6 @@
 ---
 priority: 10
+providers: [ "virtualbox", "lxc" ]
 inline: |
   # Fixes vagrant issue 1673 "stdin: is not a tty".
   # See: https://github.com/mitchellh/vagrant/issues/1673

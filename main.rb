@@ -6,9 +6,6 @@ require "json"
 
 $inventory = YAML.load($inventory)
 $inventory["roles"] ||= { "default" => { "tasks" => $inventory["tasks"] } }
-$inventory["roles"]["all"] ||= { }
-$inventory["roles"]["all"]["cpus"] ||= ($host_cpu_count / 2).ceil
-$inventory["roles"]["all"]["mem"]  ||= [[($host_memory_mb / 2.75 / 512 - 1).floor * 512, 1024].max, 3072].min
 $inventory["hosts"] ||= { PROJECT_NAME => { "roles" => $inventory["roles"].keys } }
 
 default_inventory = {
@@ -21,6 +18,16 @@ default_inventory = {
     "dockerinit" => YAML.load(File.open("#{File.dirname(__FILE__)}/tasks/dockerinit.yml")),
     "devinit" => YAML.load(File.open("#{File.dirname(__FILE__)}/tasks/devinit.yml")),
     "sysinfo" => YAML.load(File.open("#{File.dirname(__FILE__)}/tasks/sysinfo.yml"))
+  },
+  "roles" => {
+    "all" => {
+      "cpus" => ($host_cpu_count / 2).ceil,
+      "mem" => [[($host_memory_mb / 2.75 / 512 - 1).floor * 512, 1024].max, 3072].min,
+      "tasks" => {
+        "devinit" => { },
+        "sysinfo" => { }
+      }
+    }
   }
 }
 

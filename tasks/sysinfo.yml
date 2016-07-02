@@ -1,6 +1,7 @@
 ---
 priority: 50
 privileged: false
+providers: [ "virtualbox", "lxc" ]
 run: always
 inline: |
   cat /proc/loadavg | awk '{ print "System load: "$3 }'
