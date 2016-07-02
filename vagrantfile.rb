@@ -1,7 +1,4 @@
 Vagrant.configure(2) do |config|
-  # remove disabled hosts
-  $inventory["hosts"] = filter_provider_os "hosts", $inventory, nil, $os
-
   # merge vagrant config with $inventory
   merge_config config, $inventory["config"]
 
@@ -14,6 +11,7 @@ Vagrant.configure(2) do |config|
     host.delete "roles"
 
     host["hostname"] ||= host_id
+    host["tasks"] = $inventory["tasks"].keep_if { |k, v| host["tasks"].key? k }.deep_merge host["tasks"] if not host["tasks"].nil?
 
     config.vm.define host["hostname"] do |box|
       # set the hostname
