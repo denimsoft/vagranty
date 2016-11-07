@@ -29,7 +29,7 @@ Vagrant.configure(2) do |config|
       box.vm.provider :virtualbox do |vbox, override|
         override.vm.box = host["box"] || "geerlingguy/ubuntu1604"
         vbox.customize ["modifyvm", :id, "--memory", host["mem"]]
-        vbox.customize ["modifyvm", :id, "--cpus", 1]
+        vbox.customize ["modifyvm", :id, "--cpus", host["cpus"]]
         vbox.customize ["modifyvm", :id, "--name", host["hostname"]]
 
         sync_folders override, host, "virtualbox", $os
@@ -56,7 +56,7 @@ Vagrant.configure(2) do |config|
 
       # lxc provider
       box.vm.provider :lxc do |lxc, override|
-        override.vm.box = host["box"] || "developerinlondon/ubuntu_lxc_xenial_x64 "
+        override.vm.box = host["box"] || "developerinlondon/ubuntu_lxc_xenial_x64"
         lxc.customize "cgroup.memory.limit_in_bytes", "#{host["mem"]}M"
         lxc.customize "mount.auto", "cgroup"
         lxc.customize "aa_profile", "unconfined"
